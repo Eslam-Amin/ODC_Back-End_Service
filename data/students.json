@@ -1,0 +1,26 @@
+[
+    {
+        "stu_0": {
+            "name": "Eslam Amin",
+            "gender":"male",
+            "age": 23,
+            "badges": ["frontEnd_angular101"]    
+        }
+    },
+    {
+        "stu_1": {
+            "name": "ECa AmiNOo",
+            "gender":"male",
+            "age": 20,
+            "badges": ["backEnd_nodeJs101"]
+        }
+    },
+    {
+        "stu_2": {
+            "name": "Eslam Amin",
+            "gender":"male",
+            "age": 23,
+            "badges": ""
+        }
+    }
+]

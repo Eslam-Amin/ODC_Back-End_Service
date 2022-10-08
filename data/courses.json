@@ -1,0 +1,63 @@
+[
+    {
+        "path":"web",
+        "courses":{
+        "courseName":"frontEnd",
+        "frontEnd":{
+                "react101": {
+                    "courseName":"React",
+                    "skills_covered": ["Bootstrap", "React"],
+                    "prerequistes": ["HTML", "CSS", "JavaScript"],
+                    "badge": "React Developer",
+                    "badgeId":"react101"
+                },
+                "angular101": {
+                    "courseName":"Angular",
+                    "skills_covered": ["Bootstrap", "React"],
+                    "prerequistes": ["HTML", "CSS", "TypeScript"],
+                    "badge": "Angular Developer",
+                    "badgeId":"angular101"
+                }
+        },
+        "backEnd":{
+            "courseName":"backEnd",
+                "laravel101": {
+                    "courseName":"Laravel",
+                    "skills_covered": ["Laravel", "RESTful APIs"],
+                    "prerequistes": ["HTML", "CSS", "PHP", "database"],
+                    "badge": "Laravel Developer",
+                    "badgeId":"laravel101"
+                },
+                "nodeJs101": {
+                    "courseName":"NodeJS",
+                    "skills_covered": ["nodeJs", "ExpressJs", "RESTful APIs", "CRUD opr."],
+                    "prerequistes": ["HTML", "CSS", "JavaScript", "database"],
+                    "badge": "nodeJs Developer",
+                    "badgeId":"nodeJs101"
+                    
+                },
+                "dotNet101": {
+                    "courseName":".Net",
+                    "skills_covered": ["RESTful APIs", "CRUD opr.", "MVC"],
+                    "prerequistes": ["HTML", "CSS", "C#", "database"],
+                    "badge": "dotNet Developer",
+                    "badgeId":"dotNet101"
+
+                }
+
+            }
+        }
+
+    },
+    {
+        "path":"mobile",
+        "courses":{
+            "flutter": {},
+            "java": {},
+            "kotlin": {}
+        }
+    },
+    {
+
+    }
+]
