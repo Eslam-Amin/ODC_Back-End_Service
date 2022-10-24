@@ -70,7 +70,7 @@ let nodemailer = nodeMailer.createTransport({
     host:"smtp-mail.outlook.com",
     auth:{
         user:"ea.eslamamin@outlook.com",
-        pass:"eca just 1"
+        pass:"********"
     }
 })
 
