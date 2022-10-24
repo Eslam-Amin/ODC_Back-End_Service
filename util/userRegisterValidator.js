@@ -20,6 +20,9 @@ const schema = {
              [7 to 16 characters which contain only characters,
                  numeric digits,
                  underscore and first character must be a letter]*/
+        },
+        "verified":{
+            "type":"boolean"
         }
     },
     "required":["name", "email", "password"]

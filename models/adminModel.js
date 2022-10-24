@@ -27,6 +27,10 @@ const userSchema= new mongoose.Schema({
         type:String,
         required:true,
         minlength:6
+    },
+    verified:{
+        type:Boolean,
+        required:true
     }
 });
 
@@ -36,6 +40,7 @@ userSchema.method("genAuthToken", function(){
         userid: this._id,
         adminRole: this.isAdmin
     }, config.get("jwtsec"));
+    //console.log(token);
     return token;
 });
 
