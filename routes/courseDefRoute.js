@@ -4,8 +4,8 @@ const validator = require("../middleware/courseDefMW");
 const auth = require("../middleware/authMWPermission");
 const addCourse = require("../controller/courseDefController")["addCourse"];
 const updateCourse = require("../controller/courseDefController")["updateCourse"];
-const getAllCourses = require("../controller/courseDefController")["getAllCourses"];
-
+const getCourses = require("../controller/courseDefController")["getAllCourses"];
+const getCourse = require("../controller/courseDefController")["getCourse"];
 
 
 router.use(express.json({
@@ -20,7 +20,9 @@ router.post("/definition/addCourse", auth, validator, addCourse)
 
 router.put("/definition/updateCourse/:courseCode", auth,updateCourse);
 
-router.get("/definition/getAllCourses", auth, getAllCourses);
+router.get("/definition/getCourses", auth, getCourses);
+
+router.get("/definition/getCourses/:courseName", auth, getCourse);
 
 
 module.exports = router;
