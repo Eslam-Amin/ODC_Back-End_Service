@@ -9,6 +9,7 @@ It's a Backend service for automated courses system to ensure that a student app
 by sending them a mail with one of course's prerequisites which he applied to.
 * It uses JWT for Authentication, and Authorization.
 * It uses OTP on registration, by sending an email to the user with the OTP. 
+* It uses KMP (Knuth-Morris-Pratt) Algorithm to search for any course.
 
 ## Technology
 * Node.js
