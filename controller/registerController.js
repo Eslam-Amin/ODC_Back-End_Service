@@ -26,7 +26,6 @@ let register = async (req, res) => {
             password: hashedPassword,
             verified:false
         });
-        //console.log(user);
 
         //console.log(config.get("jwtsec"));
         //checks if the token is created or not
@@ -45,12 +44,6 @@ let register = async (req, res) => {
         //setting Header.
         //x refers to a custom header.
         res.header("x-auth-token", token);
-
-/*  
-        res.status(200).json({
-            status:"success",
-            message:user
-        });*/
 
     }
     catch (err) {

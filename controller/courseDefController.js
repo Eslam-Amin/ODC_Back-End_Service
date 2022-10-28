@@ -1,6 +1,7 @@
 const Course = require("../models/courseDefModel");
 const KMPSearch = require("../controller/searchSimilarWordController")["KMPSearch"];
-const getSimilarWordsWithMyAlgorithm = require("../controller/searchSimilarWordController")["getSimilarWordsWithMyAlgorithm"];
+const levenshteinDistanceAlgorithm = require("../controller/searchSimilarWordController")["levenshteinDistance"];
+const findSimilarWordsWithRegex = require("../controller/searchSimilarWordController")["getSimilarWordsWithRegex"]; 
 
 let addCourse = async (req, res) => {
     try {
@@ -41,7 +42,7 @@ let updateCourse = async (req, res) => {
         let courseUpdated = await Course.findOneAndUpdate({ courseCode: req.params.courseCode }, req.body);
         return res.status(200).json({
             status: "Success",
-            message: updateCourse
+            message: courseUpdated
         });
     }
     catch (err) {
@@ -90,19 +91,13 @@ let getCourse = async (req, res) => {
         let allCourses = await Course.find().select({}).exec();
         let foundCourses = [];
 
-        let mappingCounterOfLetterWithWord = [];
+        foundCourses.push(...usingKMPSearchAlgorithm(allCourses, courseName));
+        if(foundCourses.length == 0)
+            foundCourses.push(...usingLevenshteinDistanceAlgorithm(allCourses, courseName));
 
-        [foundCourses, mappingCounterOfLetterWithWord] = usingKMPSearchAlgorithm(allCourses, courseName);
-        let sortedArrOfMapping = getSortedArr(mappingCounterOfLetterWithWord);
-        deleteAttributeFromArrayOfObject(mappingCounterOfLetterWithWord);
-        //console.log("test Im here");
-
-        foundCourses.length > 0 ?
-            foundCourses.concat(checkForSimilarDuplicates(foundCourses, sortedArrOfMapping)) : foundCourses.concat(addFrequentElements(foundCourses, sortedArrOfMapping));
-
-        if (foundCourses.length != 0) {
+        if(foundCourses.length == 0)
             await findSimilarWordsWithRegex(foundCourses, courseName);
-        }
+
         let statusCode = foundCourses.length <= 0 || foundCourses[0].length <= 0 ? 404 : 200;
         let status = foundCourses.length <= 0 || foundCourses[0].length <= 0 ? "Failed" : "Success"
 
@@ -120,72 +115,69 @@ let getCourse = async (req, res) => {
 
 }
 
-function deleteAttributeFromArrayOfObject(mappingCounterOfLetterWithWord) {
+function deleteAttributeFromArrayOfObject(mappingCounterOfLetterWithWord, attribute) {
     mappingCounterOfLetterWithWord.forEach(Object => {
-        delete Object.counterOfLetter;
+        delete Object[attribute];
     })
 }
 
-function sortArrayOfObject(arrOfObject) {
+function sortArrayOfObject(arrOfObject, attribute, typeOfSort) {
+    typeOfSort == "desc" ? 
     arrOfObject.sort((a, b) => {
-        return (b.counterOfLetter - a.counterOfLetter);
+        return (a[attribute] - b[attribute]);
+    }) : arrOfObject.sort((a, b) => {
+        return (b[attribute] - a[attribute]);
+    }) 
+    
+}
+
+function usingLevenshteinDistanceAlgorithm(allCourses, courseName){
+    let piroityOfEachCourse = [];
+    for(let i = 0 ; i < allCourses.length; i++){
+        let course = allCourses[i].course;
+        if(course.length > courseName.length){
+            let difference = course.length;
+            let minDiff = courseName.length;
+            let splitNum = courseName.length;
+            let itertationStops = false; 
+            for(let j = 0 ; j < course.length&& !itertationStops ; j++){
+                let substringCourse = course.toLowerCase().substring(j, splitNum); 
+
+                if(substringCourse.charAt(splitNum-j) == course.charAt(course.length-1))
+                    itertationStops = true;
+                difference = levenshteinDistanceAlgorithm(substringCourse, courseName.toLowerCase());
+                minDiff = difference < minDiff  ? difference : minDiff;
+                
+                splitNum ++;
+            }
+            piroityOfEachCourse.push({"difference":minDiff,  "courseName":allCourses[i]});
+        }
+        else{
+            piroityOfEachCourse.push({"difference":levenshteinDistanceAlgorithm(course.toLowerCase(), courseName.toLowerCase()), "courseName":allCourses[i]});
+        }
+    }
+    sortArrayOfObject(piroityOfEachCourse, "difference", "desc");
+    console.log(piroityOfEachCourse);
+    deleteAttributeFromArrayOfObject(piroityOfEachCourse, "difference");
+    let courses = [];
+    piroityOfEachCourse.forEach((element)=>{
+        courses.push(element.courseName);
     })
+    return courses.splice(0, 2);
 }
 
 function usingKMPSearchAlgorithm(allCourses, courseName) {
     let foundCourses = [];
     let counterOfLetter = [];
-    let arrOfMapping = []
     for (let i = 0; i < allCourses.length; i++) {
         counterOfLetter[i] = 0;
         if ((KMPSearch(allCourses[i].course.toLowerCase(), courseName.toLowerCase()) != -1)) {
             foundCourses.push(allCourses[i])
         }
-        arrOfMapping.push(getSimilarWordsWithMyAlgorithm(allCourses, courseName, i));
     }
-    return [foundCourses, arrOfMapping]
+    return foundCourses
 }
 
-function getSortedArr(mappingCounterOfLetterWithWord) {
-    let sortedArr = [];
-    sortArrayOfObject(mappingCounterOfLetterWithWord);
-    mappingCounterOfLetterWithWord.forEach((element) => {
-        sortedArr.push(element);
-    })
 
-    return sortedArr;
-}
-
-function checkForSimilarDuplicates(foundCourses, sortedArrOfMapping) {
-    for (let i = 0; i < 2; i++) {
-        if (foundCourses[0].course != sortedArrOfMapping[i].course) {
-            foundCourses.push(sortedArrOfMapping[i].course);
-        }
-    }
-}
-
-function addFrequentElements(foundCourses, sortedArrOfMapping) {
-    foundCourses.push(sortedArrOfMapping[0])
-    foundCourses.push(sortedArrOfMapping[1])
-}
-
-async function findSimilarWordsWithRegex(foundCourses, courseName) {
-    let firstLetterOfCourseName = courseName[0];
-    let anotherLetterOfCourseName = courseName[Math.floor(courseName.length / 2)];
-    let lastLetterOfCourseName = courseName[courseName.length - 1];
-    let regexStatement = courseName.length > 2 ? `(^(?=[a-zA-Z]*))(${firstLetterOfCourseName}\\w*${anotherLetterOfCourseName}\\w*${lastLetterOfCourseName})` : `(^(?=[a-zA-Z]*))(${firstLetterOfCourseName}.*)`
-
-    let regex = new RegExp(regexStatement, 'i');
-    let course = await Course.find({ course: { $regex: regex } }).exec();
-    let courseFound = false;
-    if (course.length > 0) {
-        for (let i = 0; i < foundCourses.length && !courseFound && course.length != 0; i++) {
-            if (foundCourses[i].course == (course[0].course)) {
-                courseFound = true;
-            }
-        }
-        course.length == 0 ? null : courseFound ? null : foundCourses.concat(course);
-    }
-}
 
 module.exports = { addCourse, updateCourse, getAllCourses, getCourse };
