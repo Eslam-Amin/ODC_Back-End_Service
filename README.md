@@ -10,7 +10,7 @@ by sending them a mail with one of course's prerequisites which he applied to.
 * It uses JWT for Authentication, and Authorization.
 * It uses OTP on registration, by sending an email to the user with the OTP. 
 * It uses KMP (Knuth-Morris-Pratt) Algorithm to search for any course.
-* It uses Levenshtein Distance Algorithm to find any simialr courses with the name provided.
+* It uses Levenshtein Distance Algorithm to find any similar courses with the name provided.
 
 ## Technology
 * Node.js
